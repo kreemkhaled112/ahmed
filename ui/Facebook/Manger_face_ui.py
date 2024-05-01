@@ -85,6 +85,10 @@ class Ui_Form(object):
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.Checker = QtWidgets.QPushButton(self.widget_4)
+        self.Checker.setStyleSheet("QPushButton:checked{\n"
+"background-color: rgb(255, 0, 0);\n"
+"}")
+        self.Checker.setCheckable(True)
         self.Checker.setObjectName("Checker")
         self.horizontalLayout_2.addWidget(self.Checker)
         self.Update_all = QtWidgets.QPushButton(self.widget_4)

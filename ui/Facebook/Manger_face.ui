@@ -191,8 +191,16 @@ border: none;
              </property>
              <item>
               <widget class="QPushButton" name="Checker">
+               <property name="styleSheet">
+                <string notr="true">QPushButton:checked{
+background-color: rgb(255, 0, 0);
+}</string>
+               </property>
                <property name="text">
                 <string>Check</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
                </property>
               </widget>
              </item>

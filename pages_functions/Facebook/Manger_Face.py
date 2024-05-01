@@ -254,7 +254,7 @@ class Manager_Face(QWidget):
     def Checker(self):
         if self.update_run == False:
             self.ui.Checker.setText("Stop")
-            self.Info.Update(s=0)
+            self.Info.Update(0,0,0)
             self.update_run = True
         elif self.update_run == True:
             self.ui.Checker.setText("Checker")
@@ -266,7 +266,7 @@ class Manager_Face(QWidget):
                 checkbox_item = self.ui.table.item(row, 0)
                 if checkbox_item is not None and checkbox_item.checkState() == Qt.Checked:
                     i = [self.ui.table.item(row, col).text() for col in range(1, self.ui.table.columnCount())]
-                    value = Chrom().View(i[5])
+                    value = Chrom().View(i[5],"close")
                     if value == "" : pass
                     else : 
                         cursor.execute('UPDATE Account SET cookies = ? WHERE email = ?', (value, i[2])); self.ui.table.setItem(row, 6, QTableWidgetItem(str(value)))

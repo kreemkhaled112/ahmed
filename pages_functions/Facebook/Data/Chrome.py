@@ -38,7 +38,7 @@ class Chrom:
 
         except Exception as e : return e
         
-    def View(self,cook):
+    def View(self,cook,close=None):
         try:
             self.bot.get("https://www.facebook.com/")
             cookies = cook.strip().split(";")
@@ -49,9 +49,11 @@ class Chrom:
                     self.bot.add_cookie({'name': cookie_name, 'value': cookie_value})
             self.bot.get("https://www.facebook.com/profile.php?")
             if 'checkpoint' in self.bot.current_url :
+                if close == 'close':self.bot.quit()
                 return 'checkpoint'
             else:
                 cookie_string = self.update_cookie(cook)
+                if close == 'close':self.bot.quit()
                 return cookie_string
         except : return ''
     def Epsilon(self,user,password,cook):

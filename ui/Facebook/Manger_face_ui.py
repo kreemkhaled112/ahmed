@@ -84,6 +84,9 @@ class Ui_Form(object):
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.widget_4)
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.Checker = QtWidgets.QPushButton(self.widget_4)
+        self.Checker.setObjectName("Checker")
+        self.horizontalLayout_2.addWidget(self.Checker)
         self.Update_all = QtWidgets.QPushButton(self.widget_4)
         self.Update_all.setStyleSheet("QPushButton:checked{\n"
 "background-color: rgb(255, 0, 0);\n"
@@ -154,6 +157,7 @@ class Ui_Form(object):
         self.comboBox.setItemText(5, _translate("Form", "Cookies"))
         self.Select.setText(_translate("Form", "Select All"))
         self.Refresh.setText(_translate("Form", "Refresh"))
+        self.Checker.setText(_translate("Form", "Check"))
         self.Update_all.setText(_translate("Form", "Update"))
         self.Delete_all.setText(_translate("Form", "Delete"))
         self.Write_Change.setText(_translate("Form", "Write Change"))

@@ -190,6 +190,13 @@ border: none;
               <number>0</number>
              </property>
              <item>
+              <widget class="QPushButton" name="Checker">
+               <property name="text">
+                <string>Check</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QPushButton" name="Update_all">
                <property name="styleSheet">
                 <string notr="true">QPushButton:checked{

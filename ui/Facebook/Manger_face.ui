@@ -147,6 +147,11 @@ border: none;
                </item>
                <item>
                 <property name="text">
+                 <string>Usename</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
                  <string>Cookies</string>
                 </property>
                </item>

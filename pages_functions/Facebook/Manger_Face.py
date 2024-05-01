@@ -108,22 +108,6 @@ class Manager_Face(QWidget):
         except Exception as e:
             print(e)
             pass
-    def language(cookie):
-        try:
-            cookies= {'cookie': cookie }
-            with requests.Session() as xyz:
-                req = xyz.get('https://mbasic.facebook.com/language/',cookies=cookies)
-                pra = BeautifulSoup(req.content,'html.parser')
-                for x in pra.find_all('form',{'method':'post'}):
-                    if 'English (US)' in str(x):
-                        bahasa = {
-                            "fb_dtsg" : re.search('name="fb_dtsg" value="(.*?)"',str(req.text)).group(1),
-                            "jazoest" : re.search('name="jazoest" value="(.*?)"', str(req.text)).group(1),
-                            "submit"  : "English (US)"}
-                        url = 'https://mbasic.facebook.com' + x['action']
-                        exec = xyz.post(url,data=bahasa,cookies=cookies)
-                        return cookie
-        except Exception as e : print(e)
     def Add_Multi_Account(self):
         fname = QFileDialog.getOpenFileName(self, 'Open File', '')
         def thread():
@@ -138,33 +122,24 @@ class Manager_Face(QWidget):
                     username= "None"
                     cookies= "None"
                     try:
-                        elements = i.replace(" ", "").split(':')
-                        self.Info.ui.label.setText(f"Try Add {index}")
-                        if len(elements) == 1:
-                            cookies = elements[0]
-                        elif len(elements) == 2:
-                            email , password = elements
-                        elif len(elements) == 3:
-                            email , password , cookies = elements
-                        existing_id = cursor.execute(f"SELECT * FROM Account WHERE cookies = '{cookies}' ").fetchall()
-                        if not existing_id: 
-                            cursor.execute('INSERT INTO Account (groupname ,name ,email, password, username ,cookies) VALUES (?, ?, ?, ?, ?, ?)', (group, name, email.strip(), password.strip(),username, cookies.replace(" ", "") )); conn.commit() 
-                            self.succes += 1
-                        else : self.failed += 1
+                        if i.strip():
+                            elements = i.replace(" ", "").split(':')
+                            self.Info.ui.label.setText(f"Try Add {index}")
+                            if len(elements) == 1:
+                                cookies = elements[0]
+                            elif len(elements) == 2:
+                                email , password = elements
+                            elif len(elements) == 3:
+                                email , password , cookies = elements
+                            cookies = cookies.strip().replace(" ", "")
+                            existing_id = cursor.execute(f"SELECT * FROM Account WHERE cookies = '{cookies}' ").fetchall()
+                            if not existing_id: 
+                                cursor.execute('INSERT INTO Account (groupname ,name ,email, password, username ,cookies) VALUES (?, ?, ?, ?, ?, ?)', (group, name, email.strip(), password.strip(),username, cookies )); conn.commit() 
+                                self.succes += 1
+                            else : self.failed += 1
                     except Exception as e: print(f'Failed Format {e}')
                 self.Info.Add(1,'Add Multi Account','Account Manager',"Add Account",f"Done Add {self.succes} Accounts")
                 self.Refresh()
-                number = 0
-                q = queue.Queue()
-                for i in line: q.put(i)
-                def perfom():
-                    while not q.empty():
-                        cookie = q.get()
-                        self.Info.ui.label.setText(f"Try Chaneg language {cookie[0]}")
-                        self.language(cookie.replace(" ", ""))
-                with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-                    futures = [executor.submit(perfom) for _ in range(5)]
-                    concurrent.futures.wait(futures)
                 self.Info.ui.label.setText(f"Finished")
         if fname[0]:
             Thread(target=thread).start()

@@ -40,9 +40,37 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="UserName">
+        <property name="text">
+         <string>User Name</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="Email">
+        <property name="text">
+         <string>Email</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="Password">
+        <property name="text">
+         <string>Password</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="Cookie">
         <property name="text">
          <string>Cookie</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="Type">
+        <property name="text">
+         <string>Type</string>
         </property>
        </widget>
       </item>

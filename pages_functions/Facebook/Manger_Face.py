@@ -108,10 +108,11 @@ class Manager_Face(QWidget):
         except Exception as e:
             print(e)
             pass
-    def language(self,cookie):
+    def language(cookie):
         try:
+            cookies= {'cookie': cookie }
             with requests.Session() as xyz:
-                req = xyz.get('https://mbasic.facebook.com/language/',cookies= {'cookie': cookie })
+                req = xyz.get('https://mbasic.facebook.com/language/',cookies=cookies)
                 pra = BeautifulSoup(req.content,'html.parser')
                 for x in pra.find_all('form',{'method':'post'}):
                     if 'English (US)' in str(x):
@@ -120,9 +121,9 @@ class Manager_Face(QWidget):
                             "jazoest" : re.search('name="jazoest" value="(.*?)"', str(req.text)).group(1),
                             "submit"  : "English (US)"}
                         url = 'https://mbasic.facebook.com' + x['action']
-                        exec = xyz.post(url,data=bahasa,cookies=cookie)
+                        exec = xyz.post(url,data=bahasa,cookies=cookies)
                         return cookie
-        except Exception as e : pass
+        except Exception as e : print(e)
     def Add_Multi_Account(self):
         fname = QFileDialog.getOpenFileName(self, 'Open File', '')
         def thread():
@@ -160,7 +161,7 @@ class Manager_Face(QWidget):
                     while not q.empty():
                         cookie = q.get()
                         self.Info.ui.label.setText(f"Try Chaneg language {cookie[0]}")
-                        self.language(cookie.strip())
+                        self.language(cookie.replace(" ", ""))
                 with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
                     futures = [executor.submit(perfom) for _ in range(5)]
                     concurrent.futures.wait(futures)

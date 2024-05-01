@@ -1,6 +1,5 @@
 import requests , random , os , queue ,json , sys , webbrowser , logging  , sqlite3 , re , urllib3
 from customtkinter import *
-import undetected_chromedriver as uc
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options

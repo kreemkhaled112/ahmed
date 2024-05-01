@@ -1,0 +1,20 @@
+<RCC>
+  <qresource prefix="icon">
+    <file>icon/home-1.ico</file>
+    <file>icon/home-2.ico</file>
+    <file>icon/search.ico</file>
+    <file>icon/user.ico</file>
+    <file>icon/arrow-1.ico</file>
+    <file>icon/arrow-2.ico</file>
+    <file>icon/arrow-3.ico</file>
+    <file>icon/arrow-4.ico</file>
+    <file>icon/x-mark-1.ico</file>
+    <file>icon/x-mark-2.ico</file>
+    <file>icon/like.png</file>
+    <file>icon/love.png</file>
+    <file>icon/care.png</file>
+    <file>icon/haha.png</file>
+    <file>icon/wow.png</file>
+    <file>icon/sad.png</file>
+  </qresource>
+</RCC>

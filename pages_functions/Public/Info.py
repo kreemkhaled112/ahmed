@@ -27,7 +27,7 @@ class Info(QDialog):
         self.ui.table.setItem(0, 5 , QTableWidgetItem(message))
         try: cursor.execute('INSERT INTO Reports (Type, Id , Data , Name, Acction ,Message) VALUES ( ?, ?, ?, ?, ?, ?)', ( type , id , data, name, action, message)) ;conn.commit()
         except: pass
-    def Update(self,s=None,f=None,o=None,p=None):
+    def Update(self,s=None,f=None,o=None):
         self.ui.successful.setText(str(s))
         self.ui.faild.setText(str(f))
         self.ui.total.setText(str(s+f))

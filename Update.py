@@ -1,18 +1,17 @@
+import os
 from git import Repo
 
-def git_pull_verbose(repo_path):
+def clone_repository(repo_url):
+    current_dir = os.getcwd()
+    target_dir = os.path.join(current_dir, repo_url.split('/')[-1].replace('.git', ''))
+
     try:
-        repo = Repo(repo_path)
-        origin = repo.remotes.origin
-        result = origin.pull()
-        for info in result:
-            if info.flags > info.ERROR:
-                print("Error occurred while pulling")
-            else:
-                print(f"Updated {info.ref}. Old commit: {info.old_commit} New commit: {info.commit}")
+        print(f"Cloning from {repo_url} into {target_dir}")
+        Repo.clone_from(repo_url, target_dir)
+        print("Repository cloned successfully!")
     except Exception as e:
         print(f"An error occurred: {e}")
 
 # Example usage
-local_repo_path = "P:\\API\\ahmed"  # Change this to your repository's local path
-git_pull_verbose(local_repo_path)
+repository_url = "https://github.com/kreemkhaled112/ahmed"
+clone_repository(repository_url)

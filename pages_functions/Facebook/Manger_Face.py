@@ -97,18 +97,18 @@ class Manager_Face(QWidget):
         try:
             for i in self.changed_items:
                 item = [self.ui.table.item(i.row(), col).text() for col in range(1, self.ui.table.columnCount())]
-                cursor.execute('UPDATE Account SET groupname = ? WHERE email = ?', (item[0], item[2]))
-                cursor.execute('UPDATE Account SET name = ? WHERE email = ?', (item[1], item[2]))
-                cursor.execute('UPDATE Account SET password = ? WHERE email = ?', (item[3], item[2]))
-                cursor.execute('UPDATE Account SET username = ? WHERE email = ?', (item[4], item[2]))
-                cursor.execute('UPDATE Account SET cookies = ? WHERE email = ?', (item[5], item[2]))
+                cursor.execute('UPDATE Account SET groupname = ? WHERE cookies = ?', (item[0], item[5]))
+                cursor.execute('UPDATE Account SET name = ? WHERE cookies = ?', (item[1], item[5]))
+                cursor.execute('UPDATE Account SET password = ? WHERE cookies = ?', (item[3], item[5]))
+                cursor.execute('UPDATE Account SET username = ? WHERE cookies = ?', (item[4], item[5]))
+                cursor.execute('UPDATE Account SET cookies = ? WHERE cookies = ?', (item[5], item[5]))
                 conn.commit()
             self.ui.Write_Change.setEnabled(False)
             self.changed_items.clear()
         except Exception as e:
             print(e)
             pass
-    def language(cookie):
+    def language(self,cookie):
         try:
             with requests.Session() as xyz:
                 req = xyz.get('https://mbasic.facebook.com/language/',cookies= {'cookie': cookie })
@@ -122,39 +122,55 @@ class Manager_Face(QWidget):
                         url = 'https://mbasic.facebook.com' + x['action']
                         exec = xyz.post(url,data=bahasa,cookies=cookie)
                         return cookie
-        except Exception as e : print(e)
+        except Exception as e : pass
     def Add_Multi_Account(self):
         fname = QFileDialog.getOpenFileName(self, 'Open File', '')
         def thread():
-            group = "None"
-            name= "None"
-            email = "None"
-            password= "None"
-            username= "None"
-            cookies= "None"
+            self.Info.Update(0,0,0)
             with open(fname[0], 'r', encoding='utf-8') as file:
                 line =  file.readlines()
-                for i in line:
+                for index,i in enumerate(line):
+                    group = "None"
+                    name= "None"
+                    email = "None"
+                    password= "None"
+                    username= "None"
+                    cookies= "None"
                     try:
-                        elements = i.split(':')
-                        self.Info.ui.label.setText(f"Try Add {elements[0]}")
+                        elements = i.replace(" ", "").split(':')
+                        self.Info.ui.label.setText(f"Try Add {index}")
                         if len(elements) == 1:
-                            cookies = elements[0].strip()
+                            cookies = elements[0]
                         elif len(elements) == 2:
                             email , password = elements
                         elif len(elements) == 3:
                             email , password , cookies = elements
-                        cursor.execute('INSERT INTO Account (groupname ,name ,email, password, username ,cookies) VALUES (?, ?, ?, ?, ?, ?)', (group, name, email, password.strip(),username, self.language(cookies.strip()) )); conn.commit()
+                        existing_id = cursor.execute(f"SELECT * FROM Account WHERE cookies = '{cookies}' ").fetchall()
+                        if not existing_id: 
+                            cursor.execute('INSERT INTO Account (groupname ,name ,email, password, username ,cookies) VALUES (?, ?, ?, ?, ?, ?)', (group, name, email.strip(), password.strip(),username, cookies.replace(" ", "") )); conn.commit() 
+                            self.succes += 1
+                        else : self.failed += 1
                     except Exception as e: print(f'Failed Format {e}')
-            self.Info.Add(1,'Add Multi Account','Account Manager',"Add Account",f"Done Add {len(line)} Accounts")
-            self.Refresh()
-            self.Info.ui.label.setText(f"Finished")
-        Thread(target=thread).start()
-
+                self.Info.Add(1,'Add Multi Account','Account Manager',"Add Account",f"Done Add {self.succes} Accounts")
+                self.Refresh()
+                number = 0
+                q = queue.Queue()
+                for i in line: q.put(i)
+                def perfom():
+                    while not q.empty():
+                        cookie = q.get()
+                        self.Info.ui.label.setText(f"Try Chaneg language {cookie[0]}")
+                        self.language(cookie.strip())
+                with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+                    futures = [executor.submit(perfom) for _ in range(5)]
+                    concurrent.futures.wait(futures)
+                self.Info.ui.label.setText(f"Finished")
+        if fname[0]:
+            Thread(target=thread).start()
     def Update(self):
         if self.update_run == False:
             self.ui.Update_all.setText("Stop")
-            self.Info.Update(s=0,f=0)
+            self.Info.Update(0,0,0)
             self.update_run = True
         elif self.update_run == True:
             self.ui.Update_all.setText("Update")
@@ -224,14 +240,15 @@ class Manager_Face(QWidget):
         for row in reversed(range(self.ui.table.rowCount())):
             checkbox_item = self.ui.table.item(row, 0)
             if checkbox_item is not None and checkbox_item.checkState() == Qt.Checked:
-                item = self.ui.table.item(row, 3)
-                cursor.execute(f'DELETE FROM Account WHERE email = "{item.text()}" '); conn.commit()
+                item = self.ui.table.item(row, 6)
+                cursor.execute(f'DELETE FROM Account WHERE cookies = "{item.text()}" '); conn.commit()
                 conn.commit()
                 self.ui.table.removeRow(row)
 
         self.ui.Delete_all.setText("Delete")
         self.ui.Delete_all.setChecked(False)
         self.update_run = False
+        self.Refresh()
         self.Info.ui.label.setText("Finished")
 
     def View(self):
@@ -243,7 +260,7 @@ class Manager_Face(QWidget):
                 i.append(item.text())
             value = Chrom().View(i[5])
             if value == "" : pass
-            else : cursor.execute('UPDATE Account SET cookies = ? WHERE email = ?', (value, i[2])); self.ui.table.setItem(selected_row, 6, QTableWidgetItem(str(value)))
+            else : cursor.execute('UPDATE Account SET cookies = ? WHERE cookies = ?', (value, i[5])); self.ui.table.setItem(selected_row, 6, QTableWidgetItem(str(value)))
         else: print("لا يوجد صف محدد.")
     def Delete_row(self):
         selected_row = self.ui.table.currentRow()

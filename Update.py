@@ -2,6 +2,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import unquote
+from tqdm import tqdm
 
 def fetch_links(url):
     response = requests.get(url)
@@ -33,7 +34,9 @@ def recursive_folder_process(base_url, folders, file_links):
         folders = process_folders(base_url, folders, file_links)
 
 def download_files(base_url, file_links):
-    for link in file_links:
+    input(file_links)
+    file_links = list(file_links)  # تحويل الـ set إلى list لاستخدامه في tqdm
+    for link in tqdm(file_links, desc="Downloading files", unit="file"):
         download_url = f"{base_url}{link.replace('/blob', '/raw')}"
         path = link.replace('/kreemkhaled112/ahmed/blob/master/', '')
         path = unquote(path)  # Decode URL encoded characters.

@@ -1,17 +1,57 @@
 import os
-from git import Repo
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import unquote
 
-def clone_repository(repo_url):
-    current_dir = os.getcwd()
-    target_dir = os.path.join(current_dir, repo_url.split('/')[-1].replace('.git', ''))
+def fetch_links(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    file_links = set()
+    folder_links = set()
 
-    try:
-        print(f"Cloning from {repo_url} into {target_dir}")
-        Repo.clone_from(repo_url, target_dir)
-        print("Repository cloned successfully!")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    for link in soup.find_all('a'):
+        href = link.get('href')
+        if href and href.startswith('/kreemkhaled112/ahmed/blob'):
+            file_links.add(href)
+        elif href and href.startswith('/kreemkhaled112/ahmed/tree'):
+            folder_links.add(href)
 
-# Example usage
-repository_url = "https://github.com/kreemkhaled112/ahmed"
-clone_repository(repository_url)
+    return file_links, folder_links
+
+def process_folders(base_url, folders, file_links):
+    new_folders = set()
+    for folder in folders:
+        full_url = f"{base_url}{folder}"
+        flinks, flolders = fetch_links(full_url)
+        file_links.update(flinks)
+        new_folders.update(flolders)
+
+    return new_folders
+
+def recursive_folder_process(base_url, folders, file_links):
+    while folders:
+        folders = process_folders(base_url, folders, file_links)
+
+def download_files(base_url, file_links):
+    for link in file_links:
+        download_url = f"{base_url}{link.replace('/blob', '/raw')}"
+        path = link.replace('/kreemkhaled112/ahmed/blob/master/', '')
+        path = unquote(path)  # Decode URL encoded characters.
+        
+        # Create directory structure if it doesn't exist.
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        
+        # Download and save the file.
+        response = requests.get(download_url)
+        if response.status_code == 200:
+            with open(path, 'wb') as file:
+                file.write(response.content)
+        else:
+            print(f"Failed to download {path}")
+
+base_url = "https://github.com"
+initial_url = f"{base_url}/kreemkhaled112/ahmed"
+files, folders = fetch_links(initial_url)
+
+recursive_folder_process(base_url, folders, files)
+download_files(base_url, files)

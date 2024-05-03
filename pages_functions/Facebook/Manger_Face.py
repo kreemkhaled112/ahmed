@@ -153,7 +153,7 @@ class Manager_Face(QWidget):
             self.ui.Update_all.setText("Update")
             self.ui.Update_all.setChecked(False)
             self.update_run = False
-            self.Info.ui.label.setText(f"Finished")
+            self.Info.ui.label.setText(f"Finished Update ")
         for row in range(self.ui.table.rowCount()):
             if self.update_run:
                 checkbox_item = self.ui.table.item(row, 0)
@@ -193,15 +193,17 @@ class Manager_Face(QWidget):
                             self.Info.ui.label.setText(f"Update {i[2]}:{i[3]}")
                             result = Get_Name(i[5]).Get()
                             cursor.execute('UPDATE Account SET name = ? WHERE email = ?', (result, i[2])); self.ui.table.setItem(row, 2, QTableWidgetItem(str(result)))
-                            username = re.search(r'c_user=(\d+)', i[5]).group(1)
-                            cursor.execute('UPDATE Account SET username = ? WHERE email = ?', (username, i[2])); self.ui.table.setItem(row, 5, QTableWidgetItem(str(username)))
+                            try:
+                                username = re.search(r'c_user=(\d+)', i[5]).group(1)
+                                cursor.execute('UPDATE Account SET username = ? WHERE email = ?', (username, i[2])); self.ui.table.setItem(row, 5, QTableWidgetItem(str(username)))
+                            except: pass
                             conn.commit()
                             self.Info.Add(1,result,'Account Manager',"Update",f"Done Update {i[2]}:{i[3]}")
                             self.Info.Update(s=self.succes,f=self.failed,o=self.order)
         self.ui.Update_all.setText("Update")
         self.ui.Update_all.setChecked(False)
         self.update_run = False
-        self.Info.ui.label.setText(f"Finished")
+        self.Info.ui.label.setText(f"Finished Update")
 
     def Delete(self):
         if not self.update_run:
@@ -226,7 +228,7 @@ class Manager_Face(QWidget):
         self.ui.Delete_all.setChecked(False)
         self.update_run = False
         self.Refresh()
-        self.Info.ui.label.setText("Finished")
+        self.Info.ui.label.setText("Finished Delete")
 
     def View(self):
         selected_row = self.ui.table.currentRow()
@@ -237,7 +239,12 @@ class Manager_Face(QWidget):
                 i.append(item.text())
             value = Chrom().View(i[5])
             if value == "" : pass
-            else : cursor.execute('UPDATE Account SET cookies = ? WHERE email = ?', (value, i[2])); self.ui.table.setItem(selected_row, 6, QTableWidgetItem(str(value)))
+            else : 
+                if value[0] == 'checkpoint':
+                    cursor.execute('UPDATE Account SET name = ? WHERE email = ?', (value[0], i[2])); self.ui.table.setItem(selected_row, 2, QTableWidgetItem(str(value[0])))
+                else:
+                    cursor.execute('UPDATE account SET cookies = ? WHERE email = ?', (value[1], i[2])); self.ui.table.setItem(selected_row, 6, QTableWidgetItem(str(value[1])))
+
         else: print("لا يوجد صف محدد.")
     def Delete_row(self):
         selected_row = self.ui.table.currentRow()
@@ -260,7 +267,7 @@ class Manager_Face(QWidget):
             self.ui.Checker.setText("Checker")
             self.ui.Checker.setChecked(False)
             self.update_run = False
-            self.Info.ui.label.setText(f"Finished")
+            self.Info.ui.label.setText(f"Finished Checker ")
         for row in range(self.ui.table.rowCount()):
             if self.update_run:
                 checkbox_item = self.ui.table.item(row, 0)
@@ -268,16 +275,22 @@ class Manager_Face(QWidget):
                     i = [self.ui.table.item(row, col).text() for col in range(1, self.ui.table.columnCount())]
                     value = Chrom().View(i[5],"close")
                     if value == "" : pass
-                    else : 
-                        cursor.execute('UPDATE Account SET cookies = ? WHERE email = ?', (value, i[2])); self.ui.table.setItem(row, 6, QTableWidgetItem(str(value)))
-                        result = Get_Name(value).Get()
-                        cursor.execute('UPDATE Account SET name = ? WHERE email = ?', (result, i[2])); self.ui.table.setItem(row, 2, QTableWidgetItem(str(result)))
-                        username = re.search(r'c_user=(\d+)', i[5]).group(1)
-                        cursor.execute('UPDATE Account SET username = ? WHERE email = ?', (username, i[2])); self.ui.table.setItem(row, 5, QTableWidgetItem(str(username)))
+                    else :
+                        try:
+                            username = re.search(r'c_user=(\d+)', i[5]).group(1)
+                            cursor.execute('UPDATE Account SET username = ? WHERE email = ?', (username, i[2])); self.ui.table.setItem(row, 5, QTableWidgetItem(str(username)))
+                        except: pass
+                        if value[0] == 'checkpoint':
+                            cursor.execute('UPDATE Account SET name = ? WHERE email = ?', (value[0], i[2])); self.ui.table.setItem(row, 2, QTableWidgetItem(str(value[0])))
+                        else:
+                            result = Get_Name(value[1]).Get()
+                            cursor.execute('UPDATE Account SET name = ? WHERE email = ?', (result, i[2])); self.ui.table.setItem(row, 2, QTableWidgetItem(str(result)))
+                            cursor.execute('UPDATE Account SET cookies = ? WHERE email = ?', (value[1], i[2])); self.ui.table.setItem(row, 6, QTableWidgetItem(str(value[1])))
+
         self.ui.Checker.setText("Checker")
         self.ui.Checker.setChecked(False)
         self.update_run = False
-        self.Info.ui.label.setText(f"Finished")
+        self.Info.ui.label.setText(f"Finished Checker ")
     def Export(self):
         table_dialog = Export(self,self.ui.table )
         table_dialog.exec()

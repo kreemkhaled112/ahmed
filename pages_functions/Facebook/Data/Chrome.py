@@ -50,11 +50,11 @@ class Chrom:
             self.bot.get("https://www.facebook.com/profile.php?")
             if 'checkpoint' in self.bot.current_url :
                 if close == 'close':self.bot.quit()
-                return 'checkpoint'
+                return 'checkpoint' , cook
             else:
                 cookie_string = self.update_cookie(cook)
                 if close == 'close':self.bot.quit()
-                return cookie_string
+                return '' , cookie_string
         except : return ''
     def Epsilon(self,user,password,cook):
         try:

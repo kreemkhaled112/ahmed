@@ -77,7 +77,7 @@ class Share(QWidget):
     def Start(self):
         if self.ui.Number_Account.text() == '0': QMessage(text = 'No Account Selected').mainloop() ; self.ui.Start.setChecked(False)
         else:
-            if self.is_running == False : self.ui.Start.setText("Stop") ; self.is_running = True ; self.Info.Update(0,0,0,0)
+            if self.is_running == False : self.ui.Start.setText("Stop") ; self.is_running = True ; self.Info.Update(s=0,f=0,o=0)
             elif self.is_running : self.ui.Start.setText("Start") ; self.ui.Start.setChecked(False) ; self.is_running = False
             while  self.is_running :
                     pending = self.get_pending_order(int(self.ui.label.text()))

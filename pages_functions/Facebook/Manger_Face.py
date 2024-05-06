@@ -1,10 +1,10 @@
 from pages_functions.__init__ import *
 
 from ui.Facebook.Manger_face_ui import Ui_Form
-
 from pages_functions.Public.Info import Info
 from pages_functions.Public.Export import Export
 from pages_functions.Facebook.Data.Chrome import *
+from pages_functions.Facebook.Login import *
 
 class Manager_Face(QWidget):
     def __init__(self):
@@ -184,7 +184,7 @@ class Manager_Face(QWidget):
                                 except:pass
                                 conn.commit()
                                 self.Info.Add(0,f"{i[2]}:{i[3]}",'Account Manager',"Login",f'{result[0]}')
-                                self.Info.Update(f=1)
+                            self.Info.Update(s=self.succes,f=self.failed,o=self.order)
                         except:pass
                     else:
                         item = self.ui.table.item(row, 2)
@@ -273,6 +273,7 @@ class Manager_Face(QWidget):
                 checkbox_item = self.ui.table.item(row, 0)
                 if checkbox_item is not None and checkbox_item.checkState() == Qt.Checked:
                     i = [self.ui.table.item(row, col).text() for col in range(1, self.ui.table.columnCount())]
+                    self.Info.ui.label.setText(f"Checker {i[2]}:{i[3]}")
                     value = Chrom().View(i[5],"close")
                     if value == "" : pass
                     else :
@@ -283,8 +284,7 @@ class Manager_Face(QWidget):
                         if value[0] == 'checkpoint':
                             cursor.execute('UPDATE Account SET name = ? WHERE email = ?', (value[0], i[2])); self.ui.table.setItem(row, 2, QTableWidgetItem(str(value[0])))
                         else:
-                            result = Get_Name(value[1]).Get()
-                            cursor.execute('UPDATE Account SET name = ? WHERE email = ?', (result, i[2])); self.ui.table.setItem(row, 2, QTableWidgetItem(str(result)))
+                            cursor.execute('UPDATE Account SET name = ? WHERE email = ?', (Get_Name(value[1]).Get(), i[2])); self.ui.table.setItem(row, 2, QTableWidgetItem(str(Get_Name(value[1]).Get())))
                             cursor.execute('UPDATE Account SET cookies = ? WHERE email = ?', (value[1], i[2])); self.ui.table.setItem(row, 6, QTableWidgetItem(str(value[1])))
 
         self.ui.Checker.setText("Checker")
